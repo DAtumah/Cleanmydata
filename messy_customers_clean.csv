@@ -1,0 +1,5 @@
+name,email,phone,city,cleaning_status
+John Doe,john@example.com,08012345678,Gusau,Valid
+Jane Smith,jane@example.com,08087654321,Kaura,Valid
+,empty@example.com,08011112222,,"Missing name, city"
+Aisha,,08033334444,Zamfara,Missing email
