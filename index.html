@@ -180,7 +180,7 @@ function download(){
 function showError(msg){ $("error").textContent = msg; $("error").classList.remove("hidden"); $("result").classList.add("hidden"); }
 
 $("file").addEventListener("change", async e => {
-  const f = e.target.files[0]; if (!f) return;
+  const f = e.target.files[0]; if (!f)ble return;
   const ext = (f.name.split(".").pop() || "").toLowerCase();
   if (!["csv", "tsv", "txt"].includes(ext)) { showError('"' + f.name + '" is not a CSV file. Only .csv and .tsv files work for now. Excel support is coming.'); return; }
   baseName = f.name.replace(/\.[^.]+$/, "");
