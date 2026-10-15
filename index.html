@@ -1,253 +1,148 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CleanMyData</title>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>CleanMyData</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-body{font-family:system-ui,sans-serif;max-width:900px;margin:2rem auto;padding:0 1rem;color:#1a1a1a;background:#fff}
-h1{margin-bottom:.2rem}.sub{color:#555;margin-top:0}
-.box{border:2px dashed #888;border-radius:12px;padding:1.5rem;text-align:center;margin:1.5rem 0}
-button{padding:.6rem 1.2rem;border:0;border-radius:8px;background:#1a7f5a;color:#fff;font-size:1rem;cursor:pointer}
-button.alt{background:#666}
-select{padding:.5rem;font-size:1rem;margin-right:.5rem;max-width:100%}
-#sheetPick{background:#eef6ff;border-radius:10px;padding:.8rem 1rem;margin-bottom:1rem}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.75rem;margin:1rem 0}
-.stat{background:#f4f4f4;border-radius:10px;padding:.8rem;text-align:center}
-.stat b{display:block;font-size:1.6rem}
-.wrap{overflow-x:auto;margin-top:1rem}
-table{border-collapse:collapse;width:100%;font-size:.9rem}
-th,td{border:1px solid #ccc;padding:.4rem .6rem;text-align:left}
-th{background:#f0f0f0}
-tr.warn td.st{background:#fff3cd}
-td[contenteditable]:focus{outline:2px solid #1a7f5a;background:#eefaf4}
-td.empty::before{content:"missing";font-style:italic;color:#999}
-td.flash{animation:fl 1.5s}
-@keyframes fl{0%,60%{background:#ffd54f}100%{background:transparent}}
-#errors{background:#fff8e1;border-radius:10px;padding:.6rem 1rem;margin-top:1rem}
-#errors a{color:#0645ad;text-decoration:underline;cursor:pointer;display:block;margin:.2rem 0}
-.hidden{display:none!important}.err{color:#b00020;margin-top:1rem;font-weight:600}
-#modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:1rem}
-#modal .card{background:#fff;border-radius:12px;padding:1.2rem;max-width:640px;width:100%;max-height:85vh;overflow:auto}
-#changes{font-size:.9rem;padding-left:1.2rem}
-input[type=text]{padding:.5rem;font-size:1rem;width:100%;box-sizing:border-box;margin:.4rem 0 1rem}
-</style>
-</head>
-<body>
-<h1>CleanMyData</h1>
-<p class="sub">Clean any CSV or Excel file in seconds. Your file never leaves your computer.</p>
-
-<div class="box">
-  <p><b>Choose a CSV or Excel file</b></p>
-  <p>It needs a header row: the first row, naming each column (e.g. name, city, email, phone, id).</p>
-  <input type="file" id="file" accept=".csv,.tsv,.txt,.xlsx,.xls">
-</div>
+:root{--bg:#0b1220;--card:#141d33;--ln:#25314f;--tx:#e8eefc;--mu:#8fa0c4;--ac:#2dd4bf;--ac2:#818cf8;--wn:#fbbf24;--er:#f87171}
+*{box-sizing:border-box}body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--tx);max-width:1100px;margin:0 auto;padding:1.5rem 1rem}
+h1{margin:0;font-size:2rem;background:linear-gradient(90deg,var(--ac),var(--ac2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--mu);margin:.2rem 0 1rem}.card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:1rem;margin:1rem 0}
+.box{border:2px dashed var(--ln);text-align:center}.hidden{display:none!important}.err{color:var(--er);font-weight:600}
+button{padding:.55rem 1.1rem;border:0;border-radius:9px;background:linear-gradient(90deg,var(--ac),var(--ac2));color:#06101f;font-weight:700;cursor:pointer}
+button.alt{background:var(--ln);color:var(--tx)}button:disabled{opacity:.4;cursor:default}
+select,input[type=text]{padding:.5rem;font-size:1rem;background:#0b1220;color:var(--tx);border:1px solid var(--ln);border-radius:8px}
+input[type=file]{color:var(--mu)}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem}
+.stat{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:.9rem;text-align:center;color:var(--mu)}
+.stat b{display:block;font-size:1.7rem;color:var(--tx)}.stat.click{cursor:pointer;border-color:var(--ac2)}.stat.click:hover{background:#1b2744}
+#mapGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.7rem;margin:.8rem 0}
+.mp label{display:block;color:var(--mu);font-size:.8rem;margin-bottom:.2rem}.mp select{width:100%}
+#report{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.6rem;padding:0;list-style:none;margin:.6rem 0 0}
+#report li{background:#0f1830;border-left:3px solid var(--ac);border-radius:8px;padding:.6rem .8rem;font-size:.9rem}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0}.chip{background:#0f1830;color:var(--wn);border:1px solid var(--wn);font-weight:600}
+.step{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;color:var(--mu)}
+.wrap{overflow-x:auto;border:1px solid var(--ln);border-radius:12px}table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{border-bottom:1px solid var(--ln);padding:.45rem .65rem;text-align:left;white-space:nowrap}th{background:#101a31;color:var(--ac)}
+td[contenteditable]:focus{outline:2px solid var(--ac);background:#10263a}td.empty::before{content:"missing";font-style:italic;color:#6b7aa0}
+td.ok{color:var(--ac)}td.bad{color:var(--wn)}td.flash{animation:fl 1.6s}@keyframes fl{0%,60%{background:#5b4a10}100%{background:transparent}}
+.pager{display:flex;gap:.6rem;align-items:center;margin-top:.7rem;color:var(--mu);flex-wrap:wrap}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:1rem}
+#modal .in{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:1.2rem;max-width:680px;width:100%;max-height:85vh;overflow:auto}
+#mb div{padding:.35rem 0;border-bottom:1px solid var(--ln);font-size:.88rem}#mb small{color:var(--mu);display:block}
+</style></head><body>
+<h1>CleanMyData</h1><p class="sub">Clean any CSV or Excel file in seconds. Your file never leaves your computer.</p>
+<div class="card box"><p><b>Choose a CSV or Excel file</b></p><p class="sub">It needs a header row: the first row, naming each column (e.g. name, city, email, phone, id).</p>
+<input type="file" id="file" accept=".csv,.tsv,.txt,.xlsx,.xls"></div>
 <p id="status" class="sub"></p>
-
-<div id="sheetPick" class="hidden">
-  <p><b>This file has several sheets. Which one do you want to clean?</b></p>
-  <select id="sheetSelect"></select>
-  <button id="sheetGo">Clean this sheet</button>
-</div>
-
+<div id="sheetPick" class="card hidden"><b>This file has several sheets. Which one do you want to clean?</b><br><br><select id="sheetSelect"></select> <button id="sheetGo">Use this sheet</button></div>
+<div id="mapCard" class="card hidden"><b>How should we treat each column?</b> <span class="sub">We guessed from the column names. Change any you like.</span>
+<div id="mapGrid"></div><button id="runBtn">Clean my data</button> <span class="sub" id="mapNote">Changing a choice later re-cleans your data and resets any cell edits.</span></div>
 <div id="error" class="err hidden"></div>
-
 <div id="result" class="hidden">
-  <div class="stats">
-    <div class="stat"><b id="sTotal">0</b>Rows read</div>
-    <div class="stat"><b id="sDupes">0</b>Duplicates removed</div>
-    <div class="stat"><b id="sKept">0</b>Records kept</div>
-    <div class="stat"><b id="sFlag">0</b>Need attention</div>
-  </div>
-  <div id="errors"></div>
-  <p class="sub">Tip: click any cell to fix it right here.</p>
-  <button id="previewBtn">Preview &amp; download</button>
-  <div class="wrap"><table id="table"></table></div>
+<div class="stats"><div class="stat"><b id="sTotal">0</b>Rows read</div><div class="stat click" id="dupCard"><b id="sDupes">0</b>Duplicates removed (tap to view)</div><div class="stat"><b id="sKept">0</b>Records kept</div><div class="stat"><b id="sFlag">0</b>Need attention</div></div>
+<div class="card"><b>What we did to your data</b><ul id="report"></ul></div>
+<div class="card"><b>Problems by column</b> <span class="sub">(tap one to start stepping through them)</span><div class="chips" id="chips"></div>
+<div class="step hidden" id="stepper"><button class="alt" id="pp">◀</button><span id="stepTxt"></span><button class="alt" id="pn">▶</button></div></div>
+<p class="sub">Tip: click any cell to fix it right here.</p>
+<div class="wrap"><table id="table"></table></div>
+<div class="pager"><button class="alt" id="prev">◀ Prev</button><span id="pg"></span><button class="alt" id="next">Next ▶</button><span style="flex:1"></span><button id="previewBtn">Preview &amp; download</button></div>
 </div>
-
-<div id="modal" class="hidden">
-  <div class="card">
-    <h2>Preview of changes</h2>
-    <p id="summary"></p>
-    <ul id="changes"></ul>
-    <label for="fname"><b>File name</b></label>
-    <input type="text" id="fname">
-    <button id="dl">Download</button>
-    <button class="alt" id="close">Close</button>
-  </div>
-</div>
-
+<div id="modal" class="hidden"><div class="in"><h2 id="mt"></h2><div id="mb"></div><br><div id="mf"></div></div></div>
 <script>
-const $ = id => document.getElementById(id);
-let columns = [], rows = [], dupRows = [], total = 0, baseName = "data";
-let workbook = null, fileBase = "data";
-
-function parseCSV(text, d){
-  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
-  const out = []; let row = [], f = "", inQuote = false;
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (inQuote) { if (c === '"') { if (text[i+1] === '"') { f += '"'; i++; } else inQuote = false; } else f += c; }
-    else if (c === '"') inQuote = true;
-    else if (c === d) { row.push(f); f = ""; }
-    else if (c === "\n" || c === "\r") { if (c === "\r" && text[i+1] === "\n") i++; row.push(f); f = ""; out.push(row); row = []; }
-    else f += c;
-  }
-  if (f !== "" || row.length) { row.push(f); out.push(row); }
-  return out.filter(r => !(r.length === 1 && r[0].trim() === ""));
-}
-
-function load(parsed){
-  columns = parsed[0].map((c, i) => String(c).trim() || "column_" + (i + 1));
-  const emailCols = columns.map((c, i) => /mail/i.test(c) ? i : -1).filter(i => i >= 0);
-  const data = parsed.slice(1);
-  total = data.length; rows = []; dupRows = [];
-  const seen = new Set();
-  data.forEach((r, idx) => {
-    const raw = columns.map((_, i) => r[i] === undefined || r[i] === null ? "" : String(r[i]));
-    const vals = raw.map((v, i) => { v = v.trim(); return emailCols.includes(i) ? v.toLowerCase() : v; });
-    const key = JSON.stringify(vals.map(v => v.toLowerCase()));
-    if (seen.has(key)) { dupRows.push(idx + 2); return; }
-    seen.add(key);
-    rows.push({ line: idx + 2, vals, raw });
-  });
-}
-
-const missingOf = r => columns.filter((_, i) => !r.vals[i].trim());
-
-function render(){
-  const t = $("table"); t.innerHTML = "";
-  const h = document.createElement("tr");
-  [...columns, "cleaning_status"].forEach(c => { const th = document.createElement("th"); th.textContent = c; h.appendChild(th); });
-  t.appendChild(h);
-  rows.forEach((r, ri) => {
-    const tr = document.createElement("tr");
-    r.vals.forEach((v, ci) => {
-      const td = document.createElement("td");
-      td.contentEditable = "true"; td.textContent = v; td.id = "c" + ri + "_" + ci;
-      if (!v) td.className = "empty";
-      td.addEventListener("input", () => { r.vals[ci] = td.textContent; td.classList.toggle("empty", !td.textContent.trim()); refresh(); });
-      tr.appendChild(td);
-    });
-    const st = document.createElement("td"); st.className = "st"; st.id = "st" + ri; tr.appendChild(st);
-    t.appendChild(tr);
-  });
-  refresh();
-}
-
-function refresh(){
-  const list = []; let flagged = 0;
-  rows.forEach((r, ri) => {
-    const m = missingOf(r), st = $("st" + ri);
-    st.textContent = m.length ? "Missing " + m.join(", ") : "Valid";
-    st.parentElement.classList.toggle("warn", m.length > 0);
-    if (m.length) { flagged++; columns.forEach((c, ci) => { if (!r.vals[ci].trim()) list.push([ri, ci, "Row " + r.line + ": missing " + c]); }); }
-  });
-  $("sTotal").textContent = total; $("sDupes").textContent = dupRows.length;
-  $("sKept").textContent = rows.length; $("sFlag").textContent = flagged;
-  const e = $("errors"); e.innerHTML = "";
-  if (!list.length) { e.textContent = "No problems left. Everything is filled in."; return; }
-  const b = document.createElement("b"); b.textContent = "Problems found (tap one to jump to it):"; e.appendChild(b);
-  list.forEach(([ri, ci, msg]) => { const a = document.createElement("a"); a.textContent = msg; a.onclick = () => jump(ri, ci); e.appendChild(a); });
-}
-
-function jump(ri, ci){
-  const td = $("c" + ri + "_" + ci);
-  td.scrollIntoView({ behavior: "smooth", block: "center" });
-  td.focus(); td.classList.remove("flash"); void td.offsetWidth; td.classList.add("flash");
-}
-
-const show = s => s === "" ? "(empty)" : '"' + s + '"';
-
-function preview(){
-  const ul = $("changes"); ul.innerHTML = "";
-  let n = 0;
-  rows.forEach(r => r.vals.forEach((v, ci) => {
-    const a = v.trim();
-    if (r.raw[ci] !== a) { n++; const li = document.createElement("li"); li.textContent = "Row " + r.line + ", " + columns[ci] + ": " + show(r.raw[ci]) + " → " + show(a); ul.appendChild(li); }
-  }));
-  const still = rows.reduce((s, r) => s + missingOf(r).length, 0);
-  let s = n + " cell(s) changed. " + dupRows.length + " duplicate row(s) removed";
-  if (dupRows.length) s += " (rows " + dupRows.join(", ") + ")";
-  s += ". " + still + " cell(s) still missing.";
-  $("summary").textContent = s;
-  $("fname").value = baseName + "_clean";
-  $("modal").classList.remove("hidden");
-}
-
-function toCSV(data){
-  return data.map(r => r.map(v => /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v).join(",")).join("\r\n");
-}
-
-function download(){
-  const name = ($("fname").value.trim() || baseName + "_clean").replace(/\.csv$/i, "") + ".csv";
-  const data = [[...columns, "cleaning_status"], ...rows.map(r => { const m = missingOf(r); return [...r.vals.map(v => v.trim()), m.length ? "Missing " + m.join(", ") : "Valid"]; })];
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([toCSV(data)], { type: "text/csv;charset=utf-8" }));
-  a.download = name; a.click(); URL.revokeObjectURL(a.href);
-  $("modal").classList.add("hidden");
-}
-
-function showError(msg){ $("error").textContent = msg; $("error").classList.remove("hidden"); $("result").classList.add("hidden"); }
-
-function sheetRows(name){
-  const ws = workbook.Sheets[name];
-  return XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, defval: "" })
-    .map(r => r.map(v => String(v)))
-    .filter(r => r.some(v => v.trim() !== ""));
-}
-
-function useSheet(name, multi){
-  const parsed = sheetRows(name);
-  if (parsed.length < 2) { showError('The sheet "' + name + '" needs a header row and at least one row of data.'); return; }
-  baseName = multi ? fileBase + "_" + name.replace(/[^\w\- ]/g, "_") : fileBase;
-  load(parsed); render();
-  $("error").classList.add("hidden");
-  $("result").classList.remove("hidden");
-}
-
-$("file").addEventListener("change", async e => {
-  const f = e.target.files[0]; if (!f) return;
-  $("error").classList.add("hidden"); $("result").classList.add("hidden"); $("sheetPick").classList.add("hidden");
-  $("status").textContent = "Reading " + f.name + "...";
-  try {
-    const ext = (f.name.split(".").pop() || "").toLowerCase();
-    fileBase = f.name.replace(/\.[^.]+$/, "");
-    baseName = fileBase;
-    if (["csv", "tsv", "txt"].includes(ext)) {
-      const parsed = parseCSV(await f.text(), ext === "tsv" ? "\t" : ",");
-      if (parsed.length < 2) { showError("This file needs a header row and at least one row of data."); return; }
-      load(parsed); render();
-      $("result").classList.remove("hidden");
-    } else if (["xlsx", "xls"].includes(ext)) {
-      if (typeof XLSX === "undefined") { showError("Excel support did not load. Check your internet connection and refresh the page."); return; }
-      workbook = XLSX.read(await f.arrayBuffer(), { type: "array" });
-      const names = workbook.SheetNames;
-      if (names.length > 1) {
-        const sel = $("sheetSelect"); sel.innerHTML = "";
-        names.forEach(n => { const o = document.createElement("option"); o.value = n; o.textContent = n; sel.appendChild(o); });
-        $("sheetPick").classList.remove("hidden");
-      } else {
-        useSheet(names[0], false);
-      }
-    } else {
-      showError('"' + f.name + '" is not supported. Use .csv, .tsv, .xlsx or .xls.');
-    }
-  } catch (err) {
-    showError("Something went wrong: " + err.message);
-  } finally {
-    $("status").textContent = "";
-  }
-});
-
-$("sheetGo").onclick = () => {
-  try { useSheet($("sheetSelect").value, true); }
-  catch (err) { showError("Something went wrong: " + err.message); }
-};
-$("previewBtn").onclick = preview;
-$("dl").onclick = download;
-$("close").onclick = () => $("modal").classList.add("hidden");
-</script>
-</body>
-</html>
+const $=id=>document.getElementById(id),PAGE=100;
+const TYPES=[["none","Leave as is"],["name","Name or place"],["email","Email"],["date","Date"],["phone","Phone"]];
+let P=[],cols=[],types=[],rows=[],dups=[],total=0,base="data",fbase="data",wb=null,page=0,probs=[],cur=0,rep=[],ran=false;
+const el=(t,x,p)=>{const e=document.createElement(t);if(x!==undefined)e.textContent=x;if(p)p.appendChild(e);return e};
+const guess=c=>/mail/i.test(c)?"email":/date/i.test(c)?"date":/phone|mobile|whatsapp|(^|[^a-z])tel([^a-z]|$)/i.test(c)?"phone":/name|city|town|state|country|location|lga/i.test(c)?"name":"none";
+const fixWord=w=>(w===w.toLowerCase()||w===w.toUpperCase())?w[0].toUpperCase()+w.slice(1).toLowerCase():w;
+const proper=s=>s.replace(/[A-Za-z\u00C0-\u024F]+/g,fixWord),emRe=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const pad=n=>String(n).padStart(2,"0");
+const iso=(y,m,d)=>{if(m<1||m>12||d<1||d>31)return null;const t=new Date(Date.UTC(y,m-1,d));return t.getUTCMonth()===m-1?y+"-"+pad(m)+"-"+pad(d):null};
+const tidyPhone=s=>{const d=s.replace(/[^\d]/g,"");return d?(s.trim().startsWith("+")?"+":"")+d:s};
+function parseCSV(t,d){if(t.charCodeAt(0)===0xFEFF)t=t.slice(1);const o=[];let r=[],f="",q=false;
+for(let i=0;i<t.length;i++){const c=t[i];if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}
+else if(c==='"')q=true;else if(c===d){r.push(f);f=""}else if(c==="\n"||c==="\r"){if(c==="\r"&&t[i+1]==="\n")i++;r.push(f);f="";o.push(r);r=[]}else f+=c}
+if(f!==""||r.length){r.push(f);o.push(r)}return o.filter(r=>!(r.length===1&&r[0].trim()===""))}
+function clean(){
+const data=P.slice(1),n={sp:0,em:0,pr:0,dt:0,ph:0};total=data.length;
+const list=data.map((r,idx)=>{const raw=cols.map((_,i)=>r[i]==null?"":String(r[i]));
+const vals=raw.map((v,i)=>{let s=v.replace(/\s+/g," ").trim();if(s!==v)n.sp++;const t=types[i];
+if(t==="email"){const l=s.toLowerCase();if(l!==s)n.em++;s=l}
+else if(t==="name"){const p=proper(s);if(p!==s)n.pr++;s=p}
+else if(t==="phone"){const p=tidyPhone(s);if(p!==s)n.ph++;s=p}
+return s});return{line:idx+2,vals,raw}});
+const notes=[],re=/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2}|\d{4})$/,ry=/^(\d{4})[\/.\-](\d{1,2})[\/.\-](\d{1,2})$/;
+cols.forEach((c,i)=>{if(types[i]!=="date")return;let dmy=false,mdy=false,hit=0;
+list.forEach(r=>{const m=re.exec(r.vals[i]);if(m){hit++;if(+m[1]>12)dmy=true;if(+m[2]>12)mdy=true}});
+const md=mdy&&!dmy;
+list.forEach(r=>{const v=r.vals[i];let o=null,m=re.exec(v);
+if(m){let d=+m[1],mo=+m[2];if(md){const x=d;d=mo;mo=x}const yy=+m[3],y=m[3].length===2?(yy<50?2000+yy:1900+yy):yy;o=iso(y,mo,d)}
+else if((m=ry.exec(v)))o=iso(+m[1],+m[2],+m[3]);
+if(o&&o!==v){r.vals[i]=o;n.dt++}});
+if(hit)notes.push("Dates in "+c+": read as "+(md?"month/day/year":dmy?"day/month/year":"day/month/year (assumed, the dates could not tell us)"))});
+const seen=new Map();rows=[];dups=[];
+list.forEach(r=>{const k=JSON.stringify(r.vals.map(v=>v.toLowerCase()));if(seen.has(k))dups.push({line:r.line,of:seen.get(k),vals:r.vals});else{seen.set(k,r.line);rows.push(r)}});
+rep=[];if(n.sp)rep.push("Trimmed extra spaces in "+n.sp+" cells");if(n.pr)rep.push("Fixed capital letters in "+n.pr+" name and place cells");
+if(n.em)rep.push("Lowercased "+n.em+" email addresses");if(n.ph)rep.push("Tidied "+n.ph+" phone numbers (spaces, dashes and brackets removed)");
+if(n.dt)rep.push("Standardised "+n.dt+" dates to YYYY-MM-DD");notes.forEach(x=>rep.push(x));
+if(dups.length)rep.push("Removed "+dups.length+" duplicate rows (tap the Duplicates card to see them)");page=0;cur=0}
+function issues(r){const o=[];cols.forEach((c,i)=>{const v=r.vals[i].trim(),t=types[i];if(!v){o.push([i,"missing"]);return}
+if(t==="email"&&!emRe.test(v))o.push([i,"invalid"]);
+else if(t==="date"&&!/^\d{4}-\d{2}-\d{2}$/.test(v))o.push([i,"invalid"]);
+else if(t==="phone"){const d=v.replace(/\D/g,"").length;if(d<7||d>15)o.push([i,"invalid"])}});return o}
+const statusOf=r=>{const is=issues(r);return is.length?is.map(([i,t])=>(t==="missing"?"Missing ":"Invalid ")+cols[i]).join(", "):"Valid"};
+function paint(){const s=page*PAGE;rows.slice(s,s+PAGE).forEach((r,k)=>{const st=$("st"+(s+k));if(!st)return;const x=statusOf(r);st.textContent=x;st.className=x==="Valid"?"ok":"bad"})}
+function summary(){probs=[];const g={};let fl=0,ms=0,iv=0;
+rows.forEach((r,ri)=>{const is=issues(r);if(is.length)fl++;is.forEach(([ci,t])=>{probs.push([ri,ci]);if(t==="missing")ms++;else iv++;const k=cols[ci]+" · "+t;(g[k]=g[k]||[]).push(probs.length-1)})});
+$("sTotal").textContent=total;$("sDupes").textContent=dups.length;$("sKept").textContent=rows.length;$("sFlag").textContent=fl;
+const rl=$("report");rl.innerHTML="";const items=[...rep];if(ms)items.push("Flagged "+ms+" missing cells for you to fill in");
+if(iv)items.push("Flagged "+iv+" cells that look invalid (emails, dates or phone numbers). Please check them, we do not guess");
+if(!items.length)items.push("Your data was already clean");items.forEach(t=>el("li",t,rl));
+const ch=$("chips");ch.innerHTML="";Object.entries(g).sort((a,b)=>b[1].length-a[1].length).forEach(([k,v])=>{const b=el("button",k+" ("+v.length+")",ch);b.className="chip";b.onclick=()=>go(v[0])});
+if(!probs.length)el("span","No problems left. Everything is filled in.",ch);$("stepper").classList.toggle("hidden",!probs.length);paint()}
+function draw(){const t=$("table");t.innerHTML="";const h=el("tr","",t);[...cols,"status"].forEach(c=>el("th",c,h));
+const s=page*PAGE;rows.slice(s,s+PAGE).forEach((r,k)=>{const ri=s+k,tr=el("tr","",t);
+r.vals.forEach((v,ci)=>{const td=el("td",v,tr);td.contentEditable="true";td.id="c"+ri+"_"+ci;if(!v)td.className="empty";
+td.oninput=()=>{r.vals[ci]=td.textContent;td.classList.toggle("empty",!td.textContent.trim());summary()}});
+const st=el("td","",tr);st.id="st"+ri});
+$("pg").textContent="Rows "+(rows.length?s+1:0)+"–"+Math.min(s+PAGE,rows.length)+" of "+rows.length;$("prev").disabled=page===0;$("next").disabled=s+PAGE>=rows.length;paint()}
+function go(i){if(!probs.length)return;cur=Math.max(0,Math.min(i,probs.length-1));const[ri,ci]=probs[cur];const p=Math.floor(ri/PAGE);
+if(p!==page){page=p;draw()}$("stepTxt").textContent="Problem "+(cur+1)+" of "+probs.length;
+const td=$("c"+ri+"_"+ci);td.scrollIntoView({behavior:"smooth",block:"center"});td.focus();td.classList.remove("flash");void td.offsetWidth;td.classList.add("flash")}
+function modal(title,build){$("mt").textContent=title;$("mb").innerHTML="";$("mf").innerHTML="";build($("mb"),$("mf"));$("modal").classList.remove("hidden")}
+const closeBtn=f=>{const b=el("button","Close",f);b.className="alt";b.onclick=()=>$("modal").classList.add("hidden")};
+const show=s=>s===""?"(empty)":'"'+s+'"';
+function showDups(){if(!dups.length)return;modal("Duplicates removed ("+dups.length+")",(b,f)=>{
+dups.slice(0,200).forEach(d=>{const x=el("div","Row "+d.line+" is a copy of row "+d.of,b);el("small",d.vals.join("  |  "),x)});
+if(dups.length>200)el("div","Showing the first 200 of "+dups.length+".",b);closeBtn(f)})}
+function preview(){modal("Preview of changes",(b,f)=>{let n=0;const li=[];
+rows.forEach(r=>r.vals.forEach((v,ci)=>{if(r.raw[ci]!==v.trim()){n++;if(li.length<200)li.push("Row "+r.line+", "+cols[ci]+": "+show(r.raw[ci])+" → "+show(v.trim()))}}));
+el("p",n+" cell(s) changed, "+dups.length+" duplicate row(s) removed, "+probs.length+" problem(s) still open.",b);
+li.forEach(t=>el("div",t,b));if(n>200)el("div","Showing the first 200 changes. The download has everything.",b);
+el("p","File name",b);const inp=el("input","",b);inp.type="text";inp.value=base+"_clean";inp.style.width="100%";
+const d=el("button","Download",f);d.onclick=()=>download(inp.value);f.appendChild(document.createTextNode(" "));closeBtn(f)})}
+const toCSV=a=>a.map(r=>r.map(v=>/[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v).join(",")).join("\r\n");
+function download(name){name=(name.trim()||base+"_clean").replace(/\.csv$/i,"")+".csv";
+const data=[[...cols,"cleaning_status"],...rows.map(r=>[...r.vals.map(v=>v.trim()),statusOf(r)])];
+const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([toCSV(data)],{type:"text/csv;charset=utf-8"}));a.download=name;a.click();URL.revokeObjectURL(a.href);$("modal").classList.add("hidden")}
+function showError(m){$("error").textContent=m;$("error").classList.remove("hidden");$("result").classList.add("hidden")}
+function buildMap(){const g=$("mapGrid");g.innerHTML="";cols.forEach((c,i)=>{const d=el("div","",g);d.className="mp";el("label",c,d);const s=el("select","",d);
+TYPES.forEach(([v,t])=>{const o=el("option",t,s);o.value=v});s.value=types[i];s.onchange=()=>{types[i]=s.value;if(ran)run()}})}
+function start(parsed){if(parsed.length<2){showError("This needs a header row and at least one row of data.");return}
+P=parsed;cols=parsed[0].map((c,i)=>String(c).trim()||"column_"+(i+1));types=cols.map(guess);ran=false;
+buildMap();$("error").classList.add("hidden");$("result").classList.add("hidden");$("mapCard").classList.remove("hidden")}
+function run(){clean();draw();summary();ran=true;$("result").classList.remove("hidden")}
+function useSheet(name,multi){const ws=wb.Sheets[name];
+const p=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:""}).map(r=>r.map(v=>String(v))).filter(r=>r.some(v=>v.trim()!==""));
+base=multi?fbase+"_"+name.replace(/[^\w\- ]/g,"_"):fbase;start(p)}
+$("file").addEventListener("change",async e=>{const f=e.target.files[0];if(!f)return;
+["error","result","sheetPick","mapCard"].forEach(i=>$(i).classList.add("hidden"));$("status").textContent="Reading "+f.name+"...";
+try{const ext=(f.name.split(".").pop()||"").toLowerCase();fbase=f.name.replace(/\.[^.]+$/,"");base=fbase;
+if(["csv","tsv","txt"].includes(ext))start(parseCSV(await f.text(),ext==="tsv"?"\t":","));
+else if(["xlsx","xls"].includes(ext)){if(typeof XLSX==="undefined"){showError("Excel support did not load. Check your internet and refresh.");return}
+wb=XLSX.read(await f.arrayBuffer(),{type:"array"});const ns=wb.SheetNames;
+if(ns.length>1){const s=$("sheetSelect");s.innerHTML="";ns.forEach(n=>{const o=el("option",n,s);o.value=n});$("sheetPick").classList.remove("hidden")}else useSheet(ns[0],false)}
+else showError('"'+f.name+'" is not supported. Use .csv, .tsv, .xlsx or .xls.')}
+catch(err){showError("Something went wrong: "+err.message)}finally{$("status").textContent=""}});
+$("sheetGo").onclick=()=>{try{useSheet($("sheetSelect").value,true)}catch(err){showError("Something went wrong: "+err.message)}};
+$("runBtn").onclick=()=>{try{run()}catch(err){showError("Something went wrong: "+err.message)}};
+$("prev").onclick=()=>{page--;draw()};$("next").onclick=()=>{page++;draw()};$("pp").onclick=()=>go(cur-1);$("pn").onclick=()=>go(cur+1);
+$("dupCard").onclick=showDups;$("previewBtn").onclick=preview;
+</script></body></html>
